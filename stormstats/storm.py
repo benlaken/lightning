@@ -18,16 +18,29 @@ class Storm(object):
         pass
 
 
-class WWLN(object):
-    """Deal with WWLN data"""
+def read_WWLN(file):
+    """Read WWLN file"""
+    tmp = pd.read_csv(file, parse_dates=True, header=None,
+                      names=['date', 'time', 'lat', 'lon', 'err', '#sta'])
+    # Generate a list of datetime objects with time to miliseconds
+    list_dts = []
+    for dvals, tvals, in zip(tmp['date'], tmp['time']):
+        list_dts.append(gen_datetime(dvals, tvals))
+    dtdf = pd.DataFrame(list_dts, columns=['datetime'])
+    result = pd.concat([dtdf, tmp], axis=1)
+    result = result.drop(['date', 'time'], axis=1)
+    return result
 
-    def Gen_date(filename):
-        ''' Generate the datetime object from a filename string'''
-        yr = int(filename.split('.')[0][1:5])
-        mth = int(filename.split('.')[0][5:7])
-        day = int(filename.split('.')[0][7:9])
-        return dt.datetime(yr, mth, day)
 
+def gen_datetime(dvals, tvals):
+    dvals = [int(t) for t in dvals.split('/')]
+    hh, mm, sec_micro = tvals.split(':')
+    hh = int(hh)
+    mm = int(mm)
+    ss, mss = sec_micro.split('.')
+    ss = int(ss)
+    mss = int(mss)
+    return dt.datetime(*dvals, hh, mm, ss, mss)
 
 if __name__ == "__main__":
     print("Executing lightning_analysis.py directly")
