@@ -20,6 +20,8 @@ Automated building via Travis CI.
 
 Includes Docker instance for launching the IPython Notebook.
 
+PyPI page: [https://pypi.python.org/pypi/stormstats](https://pypi.python.org/pypi/stormstats)
+
 Run tests via the command `py.test`
 
 ## Install ##
