@@ -1,4 +1,6 @@
-# Lightning
+# Lightning Research
+
+### Dev notes ###
 
 This iPython notebook extracts lightning data from raw WWLN data files and uses
 a custom Python module (stormstats) to investigate the data.
@@ -19,3 +21,11 @@ Automated building via Travis CI.
 Includes Docker instance for launching the IPython Notebook.
 
 Run tests via the command `py.test`
+
+## Install ##
+During development install the package by running
+`git clone <repo>`
+
+`cd <repo path>`
+
+`pip install -e .` # to install the stormstats package in developer mode
