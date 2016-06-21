@@ -1,3 +1,5 @@
+[![Stories in Ready](https://badge.waffle.io/jcalogovic/lightning.svg?label=ready&title=Ready)](http://waffle.io/jcalogovic/lightning)
+
 # Lightning Research
 
 ### Dev notes ###
