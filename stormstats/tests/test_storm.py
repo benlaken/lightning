@@ -12,7 +12,7 @@ def test_reading_function():
 
 
 def test_examine_date_structure():
-    test_data = read_WWLN("egdata/testdata.loc")
+    test_data = read_WWLN("stormstats/egdata/testdata.loc")
     """Check datetime is right type and elements of the datetime are ints"""
     assert isinstance(test_data['datetime'][0], pd.tslib.Timestamp)
     assert isinstance(test_data['datetime'][0].date().year, int)
