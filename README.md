@@ -1,5 +1,6 @@
 [![Stories in Ready](https://badge.waffle.io/jcalogovic/lightning.svg?label=ready&title=Ready)](http://waffle.io/jcalogovic/lightning)
 [![Build Status](https://travis-ci.org/jcalogovic/lightning.svg?branch=master)](https://travis-ci.org/jcalogovic/lightning)
+[![codecov](https://codecov.io/gh/jcalogovic/lightning/branch/master/graph/badge.svg)](https://codecov.io/gh/jcalogovic/lightning)
 
 # Lightning Research
 
