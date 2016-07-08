@@ -14,7 +14,7 @@ install:
   - pip install .
 # command to run tests
 script:
-  - py.test --cov lightning --cov-report xml --cov-report term
+  - py.test --cov stormstats --cov-report xml --cov-report term
 #  - travis-sphinx build
 after_success:
   - codecov
