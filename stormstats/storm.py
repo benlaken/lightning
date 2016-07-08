@@ -34,13 +34,14 @@ def read_WWLN(file):
 
 def gen_datetime(dvals, tvals):
     dvals = [int(t) for t in dvals.split('/')]
+    year, month, day = dvals
     hh, mm, sec_micro = tvals.split(':')
     hh = int(hh)
     mm = int(mm)
     ss, mss = sec_micro.split('.')
     ss = int(ss)
     mss = int(mss)
-    return dt.datetime(*dvals, hh, mm, ss, mss)
+    return dt.datetime(year, month, day, hh, mm, ss, mss)
 
 if __name__ == "__main__":
     print("Executing lightning_analysis.py directly")
