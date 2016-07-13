@@ -4,7 +4,6 @@ import pandas as pd
 from ..storm import Storm, read_WWLN
 
 
-
 def test_examine_date_structure():
     """Check datetime is right type and elements of the datetime are ints"""
     test_data = read_WWLN("stormstats/egdata/testdata.loc")

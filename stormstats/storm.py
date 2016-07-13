@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import datetime as dt
+import folium
 
 
 class Storm(object):
@@ -16,6 +17,28 @@ class Storm(object):
     def foo(self):
         """Class for foo"""
         pass
+
+
+def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
+    """Add individual elements to a foilum map using a cluster object"""
+    text = "Event {0} at {1}".format(key, str(date_time.time()))
+    folium.Marker([lat, lon], popup=text).add_to(cluster_obj)
+
+
+def get_map(strike_data, create_html=True):
+    """Strike data should be a pd.DF from the WWLN
+    data files read by read_WWLN()"""
+    m = folium.Map(location=[0.0, 0.01], zoom_start=2)
+    marker_cluster = folium.MarkerCluster().add_to(m)
+
+    for event in strike_data.index:
+        add_to_map(map_obj=m, date_time=strike_data.datetime[event],
+                   cluster_obj=marker_cluster, lat=strike_data.lat[event],
+                   lon=strike_data.lon[event], key=event)
+    if create_html:
+        data_date = str(strike_data.datetime[0].date())
+        m.save('map_{0}.html'.format(str(strike_data.datetime[0].date())))
+    return m
 
 
 def read_WWLN(file):
@@ -42,6 +65,9 @@ def gen_datetime(dvals, tvals):
     ss = int(ss)
     mss = int(mss)
     return dt.datetime(year, month, day, hh, mm, ss, mss)
+
+
+
 
 if __name__ == "__main__":
     print("Executing lightning_analysis.py directly")
