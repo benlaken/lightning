@@ -28,6 +28,12 @@ def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
 def get_map(strike_data, create_html=True):
     """Strike data should be a pd.DF from the WWLN
     data files read by read_WWLN()"""
+    num_rows = len(strike_data)
+    if num_rows > 1000:
+        print("Warning, you have requested a large amount of data be mapped")
+        print("I am limiting your request to the first 1,000 rows, as this")
+        print("is currently only a preview feature.")
+        strike_data = strike_data[0:1000]
     m = folium.Map(location=[0.0, 0.01], zoom_start=2)
     marker_cluster = folium.MarkerCluster().add_to(m)
 
