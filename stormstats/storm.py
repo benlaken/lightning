@@ -19,6 +19,40 @@ class Storm(object):
         pass
 
 
+def get_data(start, end, dl_link, freq='10min'):
+    """Example of use:
+
+    get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
+             dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
+    """
+    username = input("Username to access Blitzorg with:")
+    password = getpass.getpass(
+        prompt='Blitzorg password for {0}:'.format(username))
+    auth_handler = urllib.request.HTTPBasicAuthHandler()
+    auth_handler.add_password(realm='Blitzortung',
+                              uri='http://data.blitzortung.org',
+                              user=username,
+                              passwd=password)
+    opener = urllib.request.build_opener(auth_handler)
+    urllib.request.install_opener(opener)     # install globally (bad idea)
+    time_range = pd.date_range(start, end, freq=freq)
+    for time_stamp in time_range:
+        tm_month = "%02d" % (time_stamp.month,)
+        tm_day = "%02d" % (time_stamp.day,)
+        tm_hour = "%02d" % (time_stamp.hour,)
+        tm_min = "%02d" % (time_stamp.minute,)
+        # The below should use os to check if the data/ folder exists
+        tmp_link = dl_link+str(time_stamp.year)+"/"+tm_month+"/"+tm_day+"/"+tm_hour+"/"+tm_min+".json.gz"
+        tmp_name = "./data/blitz"+str(time_stamp.year)+tm_month+tm_day+"T"+tm_hour+tm_min+".json.gz"
+        if not os.path.isfile(tmp_name):
+            print('Downloading: ' + tmp_name)
+            try:
+                    urllib.request.urlretrieve(tmp_link, tmp_name)
+            except Exception as inst:
+                    print(inst)
+                    print('  Encountered unknown error. Continuing.')
+
+
 def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
     """Add individual elements to a foilum map using a cluster object"""
     text = "Event {0} at {1}".format(key, str(date_time.time()))
