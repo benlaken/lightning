@@ -10,3 +10,7 @@ __pycache__/
 coverage.xml
 WWLN/
 *.html
+data/
+*.ipynb
+jasa_code/
+target/
