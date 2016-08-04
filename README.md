@@ -4,6 +4,8 @@
 
 # Lightning Research
 
+[See the Sphinx docs](http://jcalogovic.github.io/lightning)
+
 ### Dev notes ###
 
 This iPython notebook extracts lightning data from raw WWLN data files and uses
