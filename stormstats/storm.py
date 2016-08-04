@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import folium
+import getpass
 
 
 class Storm(object):
