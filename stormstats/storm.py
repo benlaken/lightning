@@ -26,7 +26,8 @@ def get_data(start, end, dl_link, freq='10min'):
     """**Download data from Blitzorg**
 
     Using a specified time stamp for start and end, data is downloaded at a
-    default frequency of 10 minute intervals.
+    default frequency of 10 minute intervals. If a directory called data is not
+    present, it will be added to the cwd as the target for the downloads.
 
     :paramter start: string
     :parameter end: string
@@ -38,6 +39,11 @@ def get_data(start, end, dl_link, freq='10min'):
     >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
+    path = './data'
+    try:
+        os.stat(path)
+    except:
+        os.mkdir(path)
     username = input("Username to access Blitzorg with:")
     password = getpass.getpass(
         prompt='Blitzorg password for {0}:'.format(username))
