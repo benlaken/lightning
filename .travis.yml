@@ -1,6 +1,6 @@
 language: python
 python:
-  - "2.7"
+#  - "2.7"  # issue about urllib. need to change to requests in download func
   - "3.5"
 cache: pip
 # command to install dependencies
