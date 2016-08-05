@@ -26,6 +26,7 @@ simplegeneric==0.8.1
 six==1.10.0
 terminado==0.5
 tornado==4.3
+tqdm
 traitlets==4.2.1
 sphinx
 travis-sphinx

@@ -4,6 +4,8 @@ import pandas as pd
 import datetime as dt
 import folium
 import getpass
+import urllib.request
+from tqdm import tqdm
 
 
 class Storm(object):
@@ -21,10 +23,20 @@ class Storm(object):
 
 
 def get_data(start, end, dl_link, freq='10min'):
-    """Example of use:
+    """**Download data from Blitzorg**
 
-    get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
-             dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
+    Using a specified time stamp for start and end, data is downloaded at a
+    default frequency of 10 minute intervals.
+
+    :paramter start: string
+    :parameter end: string
+    :parameter freq: string
+    :paramater dl_link: string
+
+    :Example:
+
+    >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
+                dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
     username = input("Username to access Blitzorg with:")
     password = getpass.getpass(
@@ -35,23 +47,33 @@ def get_data(start, end, dl_link, freq='10min'):
                               user=username,
                               passwd=password)
     opener = urllib.request.build_opener(auth_handler)
-    urllib.request.install_opener(opener)     # install globally (bad idea)
+    urllib.request.install_opener(opener)
     time_range = pd.date_range(start, end, freq=freq)
-    for time_stamp in time_range:
-        tm_month = "%02d" % (time_stamp.month,)
-        tm_day = "%02d" % (time_stamp.day,)
-        tm_hour = "%02d" % (time_stamp.hour,)
-        tm_min = "%02d" % (time_stamp.minute,)
-        # The below should use os to check if the data/ folder exists
-        tmp_link = dl_link+str(time_stamp.year)+"/"+tm_month+"/"+tm_day+"/"+tm_hour+"/"+tm_min+".json.gz"
-        tmp_name = "./data/blitz"+str(time_stamp.year)+tm_month+tm_day+"T"+tm_hour+tm_min+".json.gz"
-        if not os.path.isfile(tmp_name):
-            print('Downloading: ' + tmp_name)
+    for time_stamp in tqdm(time_range):
+        tmp_link = dl_link+'/'.join(return_time_elements(time_stamp))+'.json.gz'
+        tmp_name = "./data/bz-"+'-'.join(return_time_elements(time_stamp))+".json.gz"
+        if os.path.isfile(tmp_name):
+            print("{} exists. Aborting download attempt".format(tmp_name))
+        else:
+            # print('Downloading: ' + tmp_name) # print name if all okay...
             try:
                     urllib.request.urlretrieve(tmp_link, tmp_name)
             except Exception as inst:
                     print(inst)
                     print('  Encountered unknown error. Continuing.')
+
+
+def return_time_elements(time_stamp):
+    """Returns formatted strings of time stamps for HTML requests.
+
+    :parameters time_range: pandas.tslib.Timestamp
+    """
+    yyyy = str(time_stamp.year)
+    mm = "%02d" % (time_stamp.month,)
+    dd = "%02d" % (time_stamp.day,)
+    hr = "%02d" % (time_stamp.hour,)
+    mins = "%02d" % (time_stamp.minute,)
+    return yyyy, mm, dd, hr, mins
 
 
 def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
@@ -106,8 +128,6 @@ def gen_datetime(dvals, tvals):
     ss = int(ss)
     mss = int(mss)
     return dt.datetime(year, month, day, hh, mm, ss, mss)
-
-
 
 
 if __name__ == "__main__":
