@@ -4,7 +4,8 @@ import pandas as pd
 import datetime as dt
 import folium
 import getpass
-import urllib.request
+import requests
+import gzip
 from tqdm import tqdm
 
 
@@ -45,15 +46,7 @@ def get_data(start, end, dl_link, freq='10min'):
     except:
         os.mkdir(path)
     username = input("Username to access Blitzorg with:")
-    password = getpass.getpass(
-        prompt='Blitzorg password for {0}:'.format(username))
-    auth_handler = urllib.request.HTTPBasicAuthHandler()
-    auth_handler.add_password(realm='Blitzortung',
-                              uri='http://data.blitzortung.org',
-                              user=username,
-                              passwd=password)
-    opener = urllib.request.build_opener(auth_handler)
-    urllib.request.install_opener(opener)
+    password = getpass.getpass(prompt='{0} Bzorg passwd'.format(username))
     time_range = pd.date_range(start, end, freq=freq)
     for time_stamp in tqdm(time_range):
         tmp_link = dl_link+'/'.join(return_time_elements(time_stamp))+'.json.gz'
@@ -61,12 +54,25 @@ def get_data(start, end, dl_link, freq='10min'):
         if os.path.isfile(tmp_name):
             print("{} exists. Aborting download attempt".format(tmp_name))
         else:
-            # print('Downloading: ' + tmp_name) # print name if all okay...
-            try:
-                    urllib.request.urlretrieve(tmp_link, tmp_name)
-            except Exception as inst:
-                    print(inst)
-                    print('  Encountered unknown error. Continuing.')
+            r = requests.get(tmp_link, auth=(username, password))
+            if r.status_code == 200:
+                # Save the binary content
+                f = open(tmp_name, 'wb')
+                for chunk in r.iter_content(chunk_size=512 * 1024):
+                    if chunk:
+                        f.write(chunk)
+                    f.close()
+                    # Read and simultaneouslyuUncompress the data into JSON
+                    inF = gzip.open(tmp_name, 'rb')
+                    s = inF.read()
+                    inF.close()
+                    fname = tmp_name[:-3]
+                    uncompressed_path = os.path.join(fname)
+                    open(uncompressed_path, 'wb').write(s)
+                    # Remove first binary file
+                    os.remove(tmp_name)
+            else:
+                raise ValueError("{0} HTTP status".format(r.status_code))
 
 
 def return_time_elements(time_stamp):
