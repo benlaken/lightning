@@ -22,7 +22,7 @@ class Storm(object):
         pass
 
 
-def get_data(start, end, dl_link):
+def get_data(start, end, dl_link, username=None, password=None):
     """**Download data from Blitzorg**
 
     Using a specified time stamp for start and end, data is downloaded at a
@@ -40,14 +40,15 @@ def get_data(start, end, dl_link):
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
     path = './data'
-    freq='10min'
+    freq = '10min'
     try:
         os.stat(path)
     except:
         os.mkdir(path)
-    username = input("Username to access Blitzorg with:")
-    password = getpass.getpass(
-        prompt='Blitzorg password for {0}:'.format(username))
+    if not username:
+        username = input("Username to access Blitzorg with:")
+        password = getpass.getpass(
+            prompt='Enter password for {0}:'.format(username))
     auth_handler = urllib.request.HTTPBasicAuthHandler()
     auth_handler.add_password(realm='Blitzortung',
                               uri='http://data.blitzortung.org',
