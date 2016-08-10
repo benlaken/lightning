@@ -22,11 +22,11 @@ class Storm(object):
         pass
 
 
-def get_data(start, end, dl_link, freq='10min'):
+def get_data(start, end, dl_link):
     """**Download data from Blitzorg**
 
     Using a specified time stamp for start and end, data is downloaded at a
-    default frequency of 10 minute intervals. If a directory called data is not
+    default frequency (10 minute intervals). If a directory called data is not
     present, it will be added to the cwd as the target for the downloads.
 
     :paramter start: string
@@ -40,6 +40,7 @@ def get_data(start, end, dl_link, freq='10min'):
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
     path = './data'
+    freq='10min'
     try:
         os.stat(path)
     except:
