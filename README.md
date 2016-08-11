@@ -9,7 +9,7 @@
 ### Dev notes ###
 
 This iPython notebook extracts lightning data from raw WWLN data files and uses
-a custom Python module (stormstats) to investigate the data.
+a custom Python module (Stormstats) to investigate the data.
 
 Code by: Dr. Jasa Calogovic (Faculty of Geodesy, University of Zagreb) and Dr. Benjamin A. Laken (UCL).
 Email: jcalogovic@geof.hr
