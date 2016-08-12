@@ -11,7 +11,7 @@ setup(
     url='https://github.com/jcalogovic/lightning',
     download_url="https://github.com/jcalogovic/lightning/tarball/0.1",
     license='MIT',
-    install_requires=['bokeh', 'pandas'],
+    install_requires=['bokeh', 'pandas', 'folium', 'tqdm'],
     keywords=['lightning', 'geoscience', 'statistics', 'science'],
     zip_safe=False,
 )
