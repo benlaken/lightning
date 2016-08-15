@@ -126,42 +126,43 @@ def read_WWLN(file):
     return result
 
 
-def count_lightnings(datain, time_step):
-    """**Count lightnings in defined time_step**
+def count_lightning(datain, time_step):
+    """**Count lightning strikes detected within a defined time_step**
 
-    Generate time intervals according to the time_step defined and count lightning strikes 
-    in these intervals. Statistics is also calculated for lightning detection error and 
-    number of stations and added to output dataframe. Time stamps in output data 
-    frame correspond to center of time periods in which lightnings are counted. 
+    Generate time intervals according to the time_step defined and count
+    lightning strikes in these intervals. Statistics are also calculated for
+    lightning detection errors and the number of stations and added to an
+    output dataframe. Time stamps in output dataframe correspond to center of
+    time periods in which lightnings are counted.
 
     :paramter datain: dataframe (lightning data)
-    :parameter time_step: integer (time step in minutes) 
+    :parameter time_step: integer (time step in minutes)
 
     :Example:
-	
-	>>> count_lightnings(LN_data, time_step)
+
+     >>> count_lightning(LN_data, time_step)
      """
     # check if time_step is multiple of 1 day
-    if(1440%time_step==0):
-        i=0
+    if(1440 % time_step == 0):
+        i = 0
         # run for loop for all time steps in one day
-        for time_interval in gen_time_intervals(extract_date(datain['datetime'][0]), 
-                                            (extract_date(datain['datetime'][0])+timedelta(days=1)), 
+        for time_interval in gen_time_intervals(extract_date(datain['datetime'][0]),
+                                            (extract_date(datain['datetime'][0])+timedelta(days=1)),
                                             timedelta(minutes=time_step)):
             # select data in given time_interval
-            tmp_LN_data=datain.loc[(datain['datetime']>=time_interval) & 
+            tmp_LN_data=datain.loc[(datain['datetime']>=time_interval) &
                         (datain['datetime']<time_interval+timedelta(minutes=time_step))]
             # calculate stats
             stats_err=gen_stats(tmp_LN_data['err'])
             stats_sta=gen_stats(tmp_LN_data['#sta'])
             # format data
-            data_list = {'count' : stats_err['count'], 'err_mean' : stats_err['mean'], 'err_std' : stats_err['std'], 
+            data_list = {'count' : stats_err['count'], 'err_mean' : stats_err['mean'], 'err_std' : stats_err['std'],
              'err_min' : stats_err['min'], 'err_max' : stats_err['max'], '#sta_mean' : stats_sta['mean'],
              '#sta_std' : stats_sta['std'], '#sta_min' : stats_sta['min'], '#sta_max' : stats_sta['max']}
             # create index
             df_index=time_interval+timedelta(minutes=(time_step/2))
             # create Dataframe
-            temp_LN_count=pd.DataFrame(data_list, index=[df_index], columns=['count', 'err_mean', 'err_std', 
+            temp_LN_count=pd.DataFrame(data_list, index=[df_index], columns=['count', 'err_mean', 'err_std',
                                                                              'err_min', 'err_max', '#sta_mean',
                                                                              '#sta_std', '#sta_min','#sta_max'])
             # add data to existing df
@@ -178,11 +179,11 @@ def count_lightnings(datain, time_step):
 def gen_stats(datain):
     """**Calculate lightning statitics and return a dictionary**
 
-    Using a raw data in certain time interval calculate mean, std, min, max value for detection 
-    error or number of stations.  
-    
+    Using a raw data in certain time interval calculate mean, std, min, max value for detection
+    error or number of stations.
+
     :paramter datain: vector with detection error or number of stations
-    
+
     :Example:
 
     >>> gen_stats(lighning_data['#sta'])
@@ -207,7 +208,7 @@ def gen_time_intervals(start, end, delta):
 def extract_date(value):
     """Convert timestamp to datetime and set everything to zero except a date"""
     dtime=value.to_datetime()
-    dtime=(dtime - timedelta(hours=dtime.hour) - timedelta(minutes=dtime.minute) - 
+    dtime=(dtime - timedelta(hours=dtime.hour) - timedelta(minutes=dtime.minute) -
             timedelta(seconds=dtime.second) - timedelta(microseconds=dtime.microsecond))
     return dtime
 
