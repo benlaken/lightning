@@ -107,8 +107,8 @@ def get_map(strike_data, create_html=True):
                    cluster_obj=marker_cluster, lat=strike_data.lat[event],
                    lon=strike_data.lon[event], key=event)
     if create_html:
-        data_date = str(strike_data.datetime[0].date())
-        m.save('map_{0}.html'.format(str(strike_data.datetime[0].date())))
+        data_date = str(strike_data.datetime.iloc[0].date())
+        m.save('map_{0}.html'.format(str(strike_data.datetime.iloc[0].date())))
     return m
 
 
@@ -146,8 +146,8 @@ def count_lightning(datain, time_step):
     if(1440 % time_step == 0):
         i = 0
         # run for loop for all time steps in one day
-        for time_interval in gen_time_intervals(extract_date(datain['datetime'][0]),
-                                            (extract_date(datain['datetime'][0])+timedelta(days=1)),
+        for time_interval in gen_time_intervals(extract_date(datain['datetime'].iloc[0]),
+                                            (extract_date(datain['datetime'].iloc[0])+timedelta(days=1)),
                                             timedelta(minutes=time_step)):
             # select data in given time_interval
             tmp_LN_data=datain.loc[(datain['datetime']>=time_interval) &
@@ -190,10 +190,17 @@ def gen_stats(datain):
     """
     tmp_dic={}
     tmp_dic['count'] = len(datain)
-    tmp_dic['mean'] = np.mean(datain)
-    tmp_dic['std'] = np.std(datain)
-    tmp_dic['min'] = min(datain)
-    tmp_dic['max'] = max(datain)
+    # if there is no lightning strikes set nan values for all stats parameters
+    if(tmp_dic['count']==0):
+    	tmp_dic['mean'] = np.nan
+    	tmp_dic['std'] = np.nan
+    	tmp_dic['min'] = np.nan
+    	tmp_dic['max'] = np.nan
+    else:
+    	tmp_dic['mean'] = np.mean(datain)
+    	tmp_dic['std'] = np.std(datain)
+    	tmp_dic['min'] = min(datain)
+    	tmp_dic['max'] = max(datain)
     return tmp_dic
 
 
