@@ -133,7 +133,7 @@ def count_lightning(datain, time_step):
     lightning strikes in these intervals. Statistics are also calculated for
     lightning detection errors and the number of stations and added to an
     output dataframe. Time stamps in output dataframe correspond to center of
-    time periods in which lightnings are counted.
+    time periods in which lightning are counted.
 
     :paramter datain: dataframe (lightning data)
     :parameter time_step: integer (time step in minutes)
