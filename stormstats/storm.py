@@ -126,6 +126,42 @@ def read_WWLN(file):
     return result
 
 
+def gen_listfiles(data_path, ext, start_date=None, end_date=None):
+    """**Generate list of files in data directory**
+
+    Using a specified data path and extension generate list of files in data directory.
+    If start_date and end_date aren't specified, all files in data directory are selected.
+
+    :paramter data_path: string
+    :parameter ext: string
+    :parameter start_date: time string in format mm-dd-yyy (optional)
+    :paramater end_date: time string in format mm-dd-yyy (optional)
+
+    :Example:
+
+    >>> gen_listfiles(data_path='./data', ext='.loc', start_date='01-01-2016', end_date='01-10-2016')
+    """
+    # make list of all files in data directory with certain extension ext 
+    listfiles = [fn for fn in os.listdir(data_path) if (fn.endswith(ext))]   
+    # check if start_date & end_date are set 
+    if (start_date is not None) or (end_date is not None):
+        all_dates = pd.date_range(start_date, end_date, freq='D')
+        # make list with files in selected range
+        files=[]
+        for date in all_dates:
+            yyyy = str(date.year)
+            mm = "%02d" % (date.month,)
+            dd = "%02d" % (date.day,)
+            file='A'+yyyy+mm+dd+ext
+            files.append(file)        
+        # compare and return matches
+        listfiles=set(listfiles).intersection(files)
+        return files
+    # if start and end dates aren't set use all files in data dir
+    else:
+        return listfiles
+
+
 def count_lightning(datain, time_step):
     """**Count lightning strikes detected within a defined time_step**
 
