@@ -8,11 +8,13 @@
 
 ### Dev notes ###
 
-This iPython notebook extracts lightning data from raw WWLN data files and uses
+This iPython notebook extracts lightning data from raw WWLLN data files and uses
 a custom Python module (Stormstats) to investigate the data.
 
 Code by: Dr. Jasa Calogovic (Faculty of Geodesy, University of Zagreb) and Dr. Benjamin A. Laken (UCL).
 Email: jcalogovic@geof.hr
+
+WWLLN data are provided by Prof. Coin Price (Tel Aviv University, Israel). To obtain and use WWLN data please contact Prof. Robert Holzworth (Earth and Space Sciences, University of Washington) bobholz@washington.edu. 
 
 Open Source (MIT license) analysis of lightning data from <source> using Python.
 
