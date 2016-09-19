@@ -7,7 +7,10 @@ import folium
 import getpass
 import urllib.request
 from tqdm import tqdm
+import stormstats
 
+current_path = os.path.dirname(stormstats.__file__)
+current_path = current_path.split('stormstats')[0]
 
 class Storm(object):
     """Main analysis class"""
@@ -40,7 +43,7 @@ def get_data(start, end, dl_link, username=None, password=None):
     >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
-    path = './data'
+    path = current_path + 'data'
     try:
         os.stat(path)
     except:
@@ -126,11 +129,13 @@ def read_WWLN(file):
     return result
 
 
-def gen_listfiles(data_path, ext, start_date=None, end_date=None):
+def gen_listfiles(data_path=current_path+'data', ext, start_date=None,
+                  end_date=None):
     """**Generate list of files in data directory**
 
-    Using a specified data path and extension generate list of files in data directory.
-    If start_date and end_date aren't specified, all files in data directory are selected.
+    Using a specified data path and extension generate list of files in data
+    directory. If start_date and end_date aren't specified, all files in the
+    data directory are selected.
 
     :paramter data_path: string
     :parameter ext: string
@@ -139,23 +144,24 @@ def gen_listfiles(data_path, ext, start_date=None, end_date=None):
 
     :Example:
 
-    >>> gen_listfiles(data_path='./data', ext='.loc', start_date='01-01-2016', end_date='01-10-2016')
+    >>> gen_listfiles(data_path='./data', ext='.loc', start_date='01-01-2016',
+    end_date='01-10-2016')
     """
-    # make list of all files in data directory with certain extension ext 
-    listfiles = [fn for fn in os.listdir(data_path) if (fn.endswith(ext))]   
-    # check if start_date & end_date are set 
+    # make list of all files in data directory with certain extension ext
+    listfiles = [fn for fn in os.listdir(data_path) if (fn.endswith(ext))]
+    # check if start_date & end_date are set
     if (start_date is not None) or (end_date is not None):
         all_dates = pd.date_range(start_date, end_date, freq='D')
         # make list with files in selected range
-        files=[]
+        files = []
         for date in all_dates:
             yyyy = str(date.year)
             mm = "%02d" % (date.month,)
             dd = "%02d" % (date.day,)
-            file='A'+yyyy+mm+dd+ext
-            files.append(file)        
+            file = 'A'+yyyy+mm+dd+ext
+            files.append(file)
         # compare and return matches
-        listfiles=set(listfiles).intersection(files)
+        listfiles = set(listfiles).intersection(files)
         return files
     # if start and end dates aren't set use all files in data dir
     else:
@@ -178,38 +184,40 @@ def count_lightning(datain, time_step):
 
      >>> count_lightning(LN_data, time_step)
      """
-    # check if time_step is multiple of 1 day
-    if(1440 % time_step == 0):
+    if(1440 % time_step == 0):  # check if time_step is multiple of 1 day
         i = 0
         # run for loop for all time steps in one day
         for time_interval in gen_time_intervals(extract_date(datain['datetime'].iloc[0]),
-                                            (extract_date(datain['datetime'].iloc[0])+timedelta(days=1)),
-                                            timedelta(minutes=time_step)):
+                                                (extract_date(datain['datetime'].iloc[0])+timedelta(days=1)),
+                                                timedelta(minutes=time_step)):
             # select data in given time_interval
-            tmp_LN_data=datain.loc[(datain['datetime']>=time_interval) &
-                        (datain['datetime']<time_interval+timedelta(minutes=time_step))]
+            tmp_LN_data = datain.loc[(datain['datetime'] >= time_interval) &
+                                     (datain['datetime'] < time_interval + timedelta(minutes=time_step))]
             # calculate stats
-            stats_err=gen_stats(tmp_LN_data['err'])
-            stats_sta=gen_stats(tmp_LN_data['#sta'])
-            # format data
-            data_list = {'count' : stats_err['count'], 'err_mean' : stats_err['mean'], 'err_std' : stats_err['std'],
-             'err_min' : stats_err['min'], 'err_max' : stats_err['max'], '#sta_mean' : stats_sta['mean'],
-             '#sta_std' : stats_sta['std'], '#sta_min' : stats_sta['min'], '#sta_max' : stats_sta['max']}
-            # create index
-            df_index=time_interval+timedelta(minutes=(time_step/2))
-            # create Dataframe
-            temp_LN_count=pd.DataFrame(data_list, index=[df_index], columns=['count', 'err_mean', 'err_std',
-                                                                             'err_min', 'err_max', '#sta_mean',
-                                                                             '#sta_std', '#sta_min','#sta_max'])
+            stats_err = gen_stats(tmp_LN_data['err'])
+            stats_sta = gen_stats(tmp_LN_data['#sta'])
+            d = {'count': stats_err['count'],
+                 'err_mean': stats_err['mean'],
+                 'err_std': stats_err['std'],
+                 'err_min': stats_err['min'],
+                 'err_max': stats_err['max'],
+                 '#sta_mean': stats_sta['mean'],
+                 '#sta_std': stats_sta['std'],
+                 '#sta_min': stats_sta['min'],
+                 '#sta_max': stats_sta['max']}
+            col_names = [k for k in d.keys()]
+            df_index = time_interval+timedelta(minutes=(time_step/2))
+            temp_LN_count = pd.DataFrame(d, index=[df_index],
+                                         columns=col_names)
             # add data to existing df
-            if(i>=1):
-                LN_count=LN_count.append(temp_LN_count)
+            if(i >= 1):
+                LN_count = LN_count.append(temp_LN_count)
             else:
-                LN_count=temp_LN_count
-            i=i+1
+                LN_count = temp_LN_count
+            i = i + 1
         return LN_count
     else:
-        print("Variable time_step {0} should have multiple of 1 day (1400 min).".format(time_step))
+        print("Variable time_step {0} should have multiple of 1 day (1400 min)".format(time_step))
 
 
 def gen_stats(datain):
@@ -227,16 +235,16 @@ def gen_stats(datain):
     tmp_dic={}
     tmp_dic['count'] = len(datain)
     # if there is no lightning strikes set nan values for all stats parameters
-    if(tmp_dic['count']==0):
-    	tmp_dic['mean'] = np.nan
-    	tmp_dic['std'] = np.nan
-    	tmp_dic['min'] = np.nan
-    	tmp_dic['max'] = np.nan
+    if(tmp_dic['count'] == 0):
+        tmp_dic['mean'] = np.nan
+        tmp_dic['std'] = np.nan
+        tmp_dic['min'] = np.nan
+        tmp_dic['max'] = np.nan
     else:
-    	tmp_dic['mean'] = np.mean(datain)
-    	tmp_dic['std'] = np.std(datain)
-    	tmp_dic['min'] = min(datain)
-    	tmp_dic['max'] = max(datain)
+        tmp_dic['mean'] = np.mean(datain)
+        tmp_dic['std'] = np.std(datain)
+        tmp_dic['min'] = min(datain)
+        tmp_dic['max'] = max(datain)
     return tmp_dic
 
 
@@ -249,10 +257,12 @@ def gen_time_intervals(start, end, delta):
 
 
 def extract_date(value):
-    """Convert timestamp to datetime and set everything to zero except a date"""
-    dtime=value.to_datetime()
-    dtime=(dtime - timedelta(hours=dtime.hour) - timedelta(minutes=dtime.minute) -
-            timedelta(seconds=dtime.second) - timedelta(microseconds=dtime.microsecond))
+    """
+    Convert timestamp to datetime and set everything to zero except a date
+    """
+    dtime = value.to_datetime()
+    dtime = (dtime - timedelta(hours=dtime.hour) - timedelta(minutes=dtime.minute) -
+             timedelta(seconds=dtime.second) - timedelta(microseconds=dtime.microsecond))
     return dtime
 
 
