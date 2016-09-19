@@ -10,7 +10,8 @@ from tqdm import tqdm
 import stormstats
 
 current_path = os.path.dirname(stormstats.__file__)
-current_path = current_path.split('stormstats')[0]
+current_path = current_path.split('stormstats')[0] + 'data'
+
 
 class Storm(object):
     """Main analysis class"""
@@ -26,7 +27,8 @@ class Storm(object):
         pass
 
 
-def get_data(start, end, dl_link, username=None, password=None):
+def get_data(start, end, dl_link, username=None, password=None,
+             data_path=current_path):
     """**Download data from Blitzorg**
 
     Using a specified time stamp for start and end, data is downloaded at a
@@ -43,11 +45,10 @@ def get_data(start, end, dl_link, username=None, password=None):
     >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
-    path = current_path + 'data'
     try:
-        os.stat(path)
+        os.stat(data_path)
     except:
-        os.mkdir(path)
+        raise OSError("Can't locate data directory at {}".format(data_path))
     if not username:
         username = input("Username to access Blitzorg with:")
         password = getpass.getpass(
@@ -129,8 +130,7 @@ def read_WWLN(file):
     return result
 
 
-def gen_listfiles(data_path=current_path+'data', ext, start_date=None,
-                  end_date=None):
+def gen_listfiles(ext, data_path=current_path, start_date=None, end_date=None):
     """**Generate list of files in data directory**
 
     Using a specified data path and extension generate list of files in data
