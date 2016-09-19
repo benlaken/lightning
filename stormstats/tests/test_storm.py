@@ -38,6 +38,7 @@ def test_get_data():
              dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/",
              username=os.environ["Blitzorg_username"], password=os.environ["Blitzorg_password"])
     files = os.listdir('data/')
-    assert len(files) is 22, 'Error, there should be 22 files downloaded'
-    assert sorted(files)[0] == "bz-2015-02-01-06-30.json.gz", "First file should be bz-2015-02-01-06-30.json.gz"
-    assert sorted(files)[-1] == 'bz-2015-02-01-10-00.json.gz', "Last file should be bz-2015-02-01-10-00.json.gz"
+    if '.DS_Store' in files:
+        files.remove('.DS_Store')
+    assert len(files) > 21, 'Error, there should be 22 files downloaded'
+    assert sorted(files)[0] == "A20160102.loc", "First file should be A20160102.loc"
