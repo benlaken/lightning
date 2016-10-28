@@ -7,10 +7,8 @@ import folium
 import getpass
 import urllib.request
 from tqdm import tqdm
-import stormstats
 
-current_path = os.path.dirname(stormstats.__file__)
-current_path = current_path.split('stormstats')[0] + 'data'
+current_path = os.path.abspath(".") + '/tmp_data'
 
 
 class Storm(object):
@@ -45,10 +43,8 @@ def get_data(start, end, dl_link, username=None, password=None,
     >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
                 dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
     """
-    try:
-        os.stat(data_path)
-    except:
-        raise OSError("Can't locate data directory at {}".format(data_path))
+    if not os.path.exists(current_path):
+        os.makedirs(current_path)
     if not username:
         username = input("Username to access Blitzorg with:")
         password = getpass.getpass(
@@ -63,7 +59,7 @@ def get_data(start, end, dl_link, username=None, password=None,
     time_range = pd.date_range(start, end, freq='10min')
     for time_stamp in tqdm(time_range):
         tmp_link = dl_link+'/'.join(return_time_elements(time_stamp))+'.json.gz'
-        tmp_name = "./data/bz-"+'-'.join(return_time_elements(time_stamp))+".json.gz"
+        tmp_name = "./tmp_data/bz-"+'-'.join(return_time_elements(time_stamp))+".json.gz"
         if os.path.isfile(tmp_name):
             print("{} exists. Aborting download attempt".format(tmp_name))
         else:
