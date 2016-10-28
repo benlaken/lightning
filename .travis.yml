@@ -4,6 +4,9 @@ python:
   - "3.5"
 cache: pip
 # command to install dependencies
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install libgdal1-dev
 install:
   - pip install --upgrade pip
   - pip install --upgrade pytest-cov
