@@ -3,6 +3,8 @@ import pandas as pd
 import getpass
 import urllib.request
 from tqdm import tqdm
+import json
+import gzip
 
 
 def return_time_elements(time_stamp):
@@ -62,3 +64,16 @@ def get_data(start, end, username=None, password=None,
             except Exception as inst:
                 print(inst)
                 print('  Encountered unknown error. Continuing.')
+
+
+def blitz_parser():
+    """The start of a Blitzorg data parser. Read an unzipped file from Bzorg,
+    into a json object.
+    """
+    with gzip.open('tmp_data/bz-2015-02-01-06-30.json.gz', 'rb') as f:
+        file_content = f.read()
+    tx = file_content.strip()
+    k = tx.decode(encoding='utf-8')
+    print("{0} elements in k list".format(len(k.split())))
+    j = json.loads(k.split()[0])  # example of decoding an element to json
+    return
