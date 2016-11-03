@@ -2,7 +2,9 @@ import os
 import sys
 import pkg_resources as pkg
 import pandas as pd
-from stormstats.storm import read_WWLN, get_map, get_data
+import geopandas as gpd
+from shapely.geometry import Point
+from stormstats.storm import read_WWLN, get_map, get_data, bzorg_to_geopandas
 
 
 def test_examine_date_structure():
@@ -25,6 +27,18 @@ def test_create_map():
     mx = get_map(strike_data=test_data)
     assert os.path.isfile(filename), "Error, no html mapfile found"
     os.remove(filename)
+
+
+def test_bzorg_to_geopandas():
+    """Check a geopandas dataframe gets created and filled with data"""
+    f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
+    df = bzorg_to_geopandas(f)
+    er1 = 'Geopandas object not created'
+    er2 = 'Geometry elements are not Shapley point objects'
+    er3 = "Error, test data not in geopandas df object"
+    assert type(df) == gpd.geodataframe.GeoDataFrame, er1
+    assert type(df['geometry'][0]) == Point, er2
+    assert len(df) == 10, er3
 
 
 def test_get_data():
