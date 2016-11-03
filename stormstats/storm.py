@@ -4,6 +4,8 @@ import pandas as pd
 import datetime as dt
 from datetime import timedelta
 import folium
+from shapely.geometry import Point
+import geopandas as gpd
 import getpass
 import urllib.request
 from tqdm import tqdm
@@ -124,6 +126,20 @@ def read_WWLN(file):
     result = pd.concat([dtdf, tmp], axis=1)
     result = result.drop(['date', 'time'], axis=1)
     return result
+
+
+def bzorg_to_geopandas(file):
+    """Read data from Blitzorg first using pandas.read_csv for convienence, and
+    then convert lat, lon points to a shaleply geometry POINT type.
+    Finally put this gemoetry into a geopandas dataframe and return it."""
+    tmp = pd.read_csv(file, parse_dates=True, header=None,
+                      names=['date', 'time', 'lat', 'lon', 'err', '#sta'])
+    list_dts = [gen_datetime(dvals, tvals)
+                for dvals, tvals in zip(tmp['date'], tmp['time'])]
+    points = [[Point(tmp.lat[row], tmp.lon[row]), dt]
+              for row, dt in zip(tmp.index, list_dts)]
+    df = gpd.GeoDataFrame(points, columns=['geometry', 'dt'])
+    return df
 
 
 def gen_listfiles(ext, data_path=current_path, start_date=None, end_date=None):
