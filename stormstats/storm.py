@@ -24,11 +24,6 @@ class Storm(object):
         pass
 
 
-
-
-
-
-
 def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
     """Add individual elements to a foilum map using a cluster object"""
     text = "Event {0} at {1}".format(key, str(date_time.time()))
@@ -57,7 +52,7 @@ def get_map(strike_data, create_html=True):
     return m
 
 
-def read_WWLN(file):
+def read_wwln(file):
     """Read WWLN file"""
     tmp = pd.read_csv(file, parse_dates=True, header=None,
                       names=['date', 'time', 'lat', 'lon', 'err', '#sta'])
@@ -71,7 +66,7 @@ def read_WWLN(file):
     return result
 
 
-def bzorg_to_geopandas(file):
+def wwln_to_geopandas(file):
     """Read data from Blitzorg first using pandas.read_csv for convienence, and
     then convert lat, lon points to a shaleply geometry POINT type.
     Finally put this gemoetry into a geopandas dataframe and return it."""
