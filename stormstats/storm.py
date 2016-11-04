@@ -28,14 +28,16 @@ class Storm(object):
 def read_blitzorg_csv(f=None):
     """
     Function to read csv data downloaded from Blitzorgs historical data
-    section. Time is in POSIX timestamps (*1000000000). An example is kept in
+    section. Time is in POSIX timestamps (x1000000000). An example is kept in
     stormstats/egdata/archive_2_raw.txt. If no data file is specified
     the function will assume you want to read this example data. A geopandas
     dataframe will be returned.
 
+    :paramter f: optional string giving path/filename of csv data
+
     :Example:
 
-    >>> stormstats.storm.read_blitzorg_csv()
+    >>> stormstats.storm.read_blitzorg_csv(f=None)
     """
     factor = 1000000000  # don't change this magic number! Its from Blitzorg.
     if f:
