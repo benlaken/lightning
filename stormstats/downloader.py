@@ -22,11 +22,14 @@ def return_time_elements(time_stamp):
 
 def get_data(start, end, username=None, password=None,
              data_path=os.path.abspath(".")+'/tmp_data'):
-    """**Download data from Blitzorg**
+    """**Download data (badly) from Blitzorg**
 
     Using a specified time stamp for start and end, data is downloaded at a
     default frequency (10 minute intervals). If a directory called data is not
     present, it will be added to the cwd as the target for the downloads.
+    This is probably a bad idea however. It is much better to 1) get the data
+    from Blitzorg directly, or 2) if you only want a small part of the data
+    and have an account, download a csv file via their web interface.
 
     :paramter start: string
     :parameter end: string
@@ -68,7 +71,7 @@ def get_data(start, end, username=None, password=None,
 
 def blitz_parser():
     """The start of a Blitzorg data parser. Read an unzipped file from Bzorg,
-    into a json object.
+    into a json object retrieved with .get_data().
     """
     with gzip.open('tmp_data/bz-2015-02-01-06-30.json.gz', 'rb') as f:
         file_content = f.read()

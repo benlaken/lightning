@@ -6,6 +6,7 @@ from datetime import timedelta
 import folium
 from shapely.geometry import Point
 import geopandas as gpd
+import pkg_resources as pkg
 
 current_path = os.path.abspath(".") + '/tmp_data'
 
@@ -22,6 +23,26 @@ class Storm(object):
     def foo(self):
         """Class for foo"""
         pass
+
+
+def read_blitzorg_csv(f=None):
+    """
+    Function to read csv data downloaded from Blitzorgs historical data
+    section. Time is in POSIX timestamps (*1000000000). An example is kept in
+    stormstats/egdata/archive_2_raw.txt. If no data file is specified
+    the function will assume you want to read this example data. A geopandas
+    dataframe will be returned.
+    """
+    factor = 1000000000
+    if f:
+        tmp = pd.read_csv(f)
+    else:
+        f = pkg.resource_filename('stormstats', "egdata/archive_2_raw.txt")
+        tmp = pd.read_csv(f)
+    dt_list = [dt.datetime.fromtimestamp(ts/factor).strftime('%Y-%m-%d %H:%M:%S:%f') for ts in tmp.time]
+    tmp_list = [[Point(lon, lat), ts] for lon, lat, ts in zip(tmp.lon, tmp.lat, dt_list)]
+    df = gpd.GeoDataFrame(tmp_list, columns=['geometry', 'dt'])
+    return df
 
 
 def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
@@ -142,7 +163,8 @@ def count_lightning(datain, time_step):
                                                 timedelta(minutes=time_step)):
             # select data in given time_interval
             tmp_LN_data = datain.loc[(datain['datetime'] >= time_interval) &
-                                     (datain['datetime'] < time_interval + timedelta(minutes=time_step))]
+                                     (datain['datetime'] < time_interval +
+                                      timedelta(minutes=time_step))]
             # calculate stats
             stats_err = gen_stats(tmp_LN_data['err'])
             stats_sta = gen_stats(tmp_LN_data['#sta'])
@@ -167,7 +189,7 @@ def count_lightning(datain, time_step):
             i = i + 1
         return LN_count
     else:
-        print("Variable time_step {0} should have multiple of 1 day (1400 min)".format(time_step))
+        print("time_step {0} multiple of 1 day (1400 min)".format(time_step))
 
 
 def gen_stats(datain):
@@ -199,7 +221,9 @@ def gen_stats(datain):
 
 
 def gen_time_intervals(start, end, delta):
-    """Create time intervals with timedelta periods using datetime for start and end"""
+    """Create time intervals with timedelta periods using datetime for start
+    and end
+    """
     curr = start
     while curr < end:
         yield curr
