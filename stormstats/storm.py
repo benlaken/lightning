@@ -6,9 +6,7 @@ from datetime import timedelta
 import folium
 from shapely.geometry import Point
 import geopandas as gpd
-import getpass
-import urllib.request
-from tqdm import tqdm
+import pkg_resources as pkg
 
 current_path = os.path.abspath(".") + '/tmp_data'
 
@@ -27,63 +25,30 @@ class Storm(object):
         pass
 
 
-def get_data(start, end, dl_link, username=None, password=None,
-             data_path=current_path):
-    """**Download data from Blitzorg**
+def read_blitzorg_csv(f=None):
+    """
+    Function to read csv data downloaded from Blitzorgs historical data
+    section. Time is in POSIX timestamps (x1000000000). An example is kept in
+    stormstats/egdata/archive_2_raw.txt. If no data file is specified
+    the function will assume you want to read this example data. A geopandas
+    dataframe will be returned.
 
-    Using a specified time stamp for start and end, data is downloaded at a
-    default frequency (10 minute intervals). If a directory called data is not
-    present, it will be added to the cwd as the target for the downloads.
-
-    :paramter start: string
-    :parameter end: string
-    :parameter freq: string
-    :paramater dl_link: string
+    :paramter f: optional string giving path/filename of csv data
 
     :Example:
 
-    >>> get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
-                dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/")
+    >>> stormstats.storm.read_blitzorg_csv(f=None)
     """
-    if not os.path.exists(current_path):
-        os.makedirs(current_path)
-    if not username:
-        username = input("Username to access Blitzorg with:")
-        password = getpass.getpass(
-            prompt='Enter password for {0}:'.format(username))
-    auth_handler = urllib.request.HTTPBasicAuthHandler()
-    auth_handler.add_password(realm='Blitzortung',
-                              uri='http://data.blitzortung.org',
-                              user=username,
-                              passwd=password)
-    opener = urllib.request.build_opener(auth_handler)
-    urllib.request.install_opener(opener)
-    time_range = pd.date_range(start, end, freq='10min')
-    for time_stamp in tqdm(time_range):
-        tmp_link = dl_link+'/'.join(return_time_elements(time_stamp))+'.json.gz'
-        tmp_name = "./tmp_data/bz-"+'-'.join(return_time_elements(time_stamp))+".json.gz"
-        if os.path.isfile(tmp_name):
-            print("{} exists. Aborting download attempt".format(tmp_name))
-        else:
-            # print('Downloading: ' + tmp_name) # print name if all okay...
-            try:
-                    urllib.request.urlretrieve(tmp_link, tmp_name)
-            except Exception as inst:
-                    print(inst)
-                    print('  Encountered unknown error. Continuing.')
-
-
-def return_time_elements(time_stamp):
-    """Returns formatted strings of time stamps for HTML requests.
-
-    :parameters time_range: pandas.tslib.Timestamp
-    """
-    yyyy = str(time_stamp.year)
-    mm = "%02d" % (time_stamp.month,)
-    dd = "%02d" % (time_stamp.day,)
-    hr = "%02d" % (time_stamp.hour,)
-    mins = "%02d" % (time_stamp.minute,)
-    return yyyy, mm, dd, hr, mins
+    factor = 1000000000  # don't change this magic number! Its from Blitzorg.
+    if f:
+        tmp = pd.read_csv(f)
+    else:
+        f = pkg.resource_filename('stormstats', "egdata/archive_2_raw.txt")
+        tmp = pd.read_csv(f)
+    dt_list = [dt.datetime.fromtimestamp(ts/factor).strftime('%Y-%m-%d %H:%M:%S:%f') for ts in tmp.time]
+    tmp_list = [[Point(lon, lat), ts] for lon, lat, ts in zip(tmp.lon, tmp.lat, dt_list)]
+    df = gpd.GeoDataFrame(tmp_list, columns=['geometry', 'dt'])
+    return df
 
 
 def add_to_map(map_obj, lat, lon, date_time, key, cluster_obj):
@@ -114,7 +79,7 @@ def get_map(strike_data, create_html=True):
     return m
 
 
-def read_WWLN(file):
+def read_wwln(file):
     """Read WWLN file"""
     tmp = pd.read_csv(file, parse_dates=True, header=None,
                       names=['date', 'time', 'lat', 'lon', 'err', '#sta'])
@@ -128,7 +93,7 @@ def read_WWLN(file):
     return result
 
 
-def bzorg_to_geopandas(file):
+def wwln_to_geopandas(file):
     """Read data from Blitzorg first using pandas.read_csv for convienence, and
     then convert lat, lon points to a shaleply geometry POINT type.
     Finally put this gemoetry into a geopandas dataframe and return it."""
@@ -204,7 +169,8 @@ def count_lightning(datain, time_step):
                                                 timedelta(minutes=time_step)):
             # select data in given time_interval
             tmp_LN_data = datain.loc[(datain['datetime'] >= time_interval) &
-                                     (datain['datetime'] < time_interval + timedelta(minutes=time_step))]
+                                     (datain['datetime'] < time_interval +
+                                      timedelta(minutes=time_step))]
             # calculate stats
             stats_err = gen_stats(tmp_LN_data['err'])
             stats_sta = gen_stats(tmp_LN_data['#sta'])
@@ -229,7 +195,7 @@ def count_lightning(datain, time_step):
             i = i + 1
         return LN_count
     else:
-        print("Variable time_step {0} should have multiple of 1 day (1400 min)".format(time_step))
+        print("time_step {0} multiple of 1 day (1400 min)".format(time_step))
 
 
 def gen_stats(datain):
@@ -261,7 +227,9 @@ def gen_stats(datain):
 
 
 def gen_time_intervals(start, end, delta):
-    """Create time intervals with timedelta periods using datetime for start and end"""
+    """Create time intervals with timedelta periods using datetime for start
+    and end
+    """
     curr = start
     while curr < end:
         yield curr
@@ -288,7 +256,3 @@ def gen_datetime(dvals, tvals):
     ss = int(ss)
     mss = int(mss)
     return dt.datetime(year, month, day, hh, mm, ss, mss)
-
-
-if __name__ == "__main__":
-    print("Executing lightning_analysis.py directly")

@@ -4,13 +4,13 @@ import pkg_resources as pkg
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
-from stormstats.storm import read_WWLN, get_map, get_data, bzorg_to_geopandas
+import stormstats
 
 
 def test_examine_date_structure():
     """Check datetime is right type and elements of the datetime are ints"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    test_data = read_WWLN(f)
+    test_data = stormstats.storm.read_wwln(f)
     assert isinstance(test_data['datetime'][0], pd.tslib.Timestamp)
     assert isinstance(test_data['datetime'][0].date().year, int)
     assert isinstance(test_data['datetime'][0].time().microsecond, int)
@@ -19,20 +19,33 @@ def test_examine_date_structure():
 def test_create_map():
     """Check a map file gets created"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    test_data = read_WWLN(f)
+    test_data = stormstats.storm.read_wwln(f)
     dstr = str(test_data.datetime[0].date())
     filename = 'map_{0}.html'.format(dstr)
     if os.path.isfile(filename):
         os.remove(filename)
-    mx = get_map(strike_data=test_data)
+    mx = stormstats.storm.get_map(strike_data=test_data)
     assert os.path.isfile(filename), "Error, no html mapfile found"
     os.remove(filename)
+
+
+def test_read_blitzorg_csv():
+    """Check a geopandas dataframe gets created and filled with data from the
+    csv files downloaded via blitzorg.
+    """
+    df = stormstats.storm.read_blitzorg_csv()
+    er1 = 'Geopandas object not created'
+    er2 = 'Geometry elements are not Shapley point objects'
+    er3 = "Error, test data not in geopandas df object"
+    assert type(df) == gpd.geodataframe.GeoDataFrame, er1
+    assert type(df['geometry'][0]) == Point, er2
+    assert len(df) == 100, er3
 
 
 def test_bzorg_to_geopandas():
     """Check a geopandas dataframe gets created and filled with data"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    df = bzorg_to_geopandas(f)
+    df = stormstats.storm.wwln_to_geopandas(f)
     er1 = 'Geopandas object not created'
     er2 = 'Geometry elements are not Shapley point objects'
     er3 = "Error, test data not in geopandas df object"
@@ -48,10 +61,10 @@ def test_get_data():
     Requires environment variables to be set so that interactive passwords are
     not needed.
     """
-    get_data(start="2015-02-01T06:30", end="2015-02-01T10:05",
-             dl_link="http://data.blitzortung.org/Data_1/Protected/Strokes/",
-             username=os.environ["Blitzorg_username"],
-             password=os.environ["Blitzorg_password"])
+    stormstats.downloader.get_data(start="2015-02-01T06:30",
+                                   end="2015-02-01T10:05",
+                                   username=os.environ["Blitzorg_username"],
+                                   password=os.environ["Blitzorg_password"])
     files = os.listdir('tmp_data/')
     if '.DS_Store' in files:
         files.remove('.DS_Store')
