@@ -29,6 +29,19 @@ def test_create_map():
     os.remove(filename)
 
 
+def test_read_blitzorg_csv():
+    """Check a geopandas dataframe gets created and filled with data from the
+    csv files downloaded via blitzorg.
+    """
+    df = stormstats.storm.read_blitzorg_csv()
+    er1 = 'Geopandas object not created'
+    er2 = 'Geometry elements are not Shapley point objects'
+    er3 = "Error, test data not in geopandas df object"
+    assert type(df) == gpd.geodataframe.GeoDataFrame, er1
+    assert type(df['geometry'][0]) == Point, er2
+    assert len(df) == 100, er3
+
+
 def test_bzorg_to_geopandas():
     """Check a geopandas dataframe gets created and filled with data"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")

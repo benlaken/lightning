@@ -32,8 +32,12 @@ def read_blitzorg_csv(f=None):
     stormstats/egdata/archive_2_raw.txt. If no data file is specified
     the function will assume you want to read this example data. A geopandas
     dataframe will be returned.
+
+    :Example:
+
+    >>> stormstats.storm.read_blitzorg_csv()
     """
-    factor = 1000000000
+    factor = 1000000000  # don't change this magic number! Its from Blitzorg.
     if f:
         tmp = pd.read_csv(f)
     else:
