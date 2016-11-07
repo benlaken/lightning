@@ -9,6 +9,9 @@ import geopandas as gpd
 import pkg_resources as pkg
 
 
+current_path = os.path.abspath(".") + '/tmp_data'
+
+
 def read_wwln(file):
     """Read WWLN file"""
     tmp = pd.read_csv(file, parse_dates=True, header=None,
