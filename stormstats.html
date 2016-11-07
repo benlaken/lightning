@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Stormstats package &#8212; stormstats 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="stormstats 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to stormstats’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="stormstats-package">
+<h1>Stormstats package<a class="headerlink" href="#stormstats-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-stormstats.storm">
+<span id="stormstats-storm-module"></span><h2>stormstats.storm module<a class="headerlink" href="#module-stormstats.storm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="stormstats.storm.Storm">
+<em class="property">class </em><code class="descclassname">stormstats.storm.</code><code class="descname">Storm</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stormstats/storm.html#Storm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stormstats.storm.Storm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Main analysis class. Optional kwargs, f can set file path and name
+of csv file downloaded from Blitzorg to load.</p>
+<dl class="staticmethod">
+<dt id="stormstats.storm.Storm.add_to_map">
+<em class="property">static </em><code class="descname">add_to_map</code><span class="sig-paren">(</span><em>map_obj</em>, <em>lat</em>, <em>lon</em>, <em>date_time</em>, <em>key</em>, <em>cluster_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stormstats/storm.html#Storm.add_to_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stormstats.storm.Storm.add_to_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add individual elements to a foilum map in a cluster object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stormstats.storm.Storm.get_map">
+<code class="descname">get_map</code><span class="sig-paren">(</span><em>create_html=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stormstats/storm.html#Storm.get_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stormstats.storm.Storm.get_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strike data should be a pd.DF from the WWLN data files read by
+read_WWLN()</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="stormstats.storm.Storm.read_blitzorg_csv">
+<em class="property">static </em><code class="descname">read_blitzorg_csv</code><span class="sig-paren">(</span><em>f=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stormstats/storm.html#Storm.read_blitzorg_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stormstats.storm.Storm.read_blitzorg_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to read csv data downloaded from Blitzorgs historical data
+section. Time is in POSIX timestamps (x1000000000). An eg is kept in
+stormstats/egdata/archive_2_raw.txt. If no data file is specified
+the function will assume you want to read this example data. Geopandas
+dataframe will be returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Paramter f:</th><td class="field-body">optional string giving path/filename of csv data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stormstats</span><span class="o">.</span><span class="n">storm</span><span class="o">.</span><span class="n">read_blitzorg_csv</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Stormstats package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-stormstats.storm">stormstats.storm module</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to stormstats&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/stormstats.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Benjamin A. Laken & Jasa Calogovic.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/stormstats.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
