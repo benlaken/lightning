@@ -36,8 +36,8 @@ class Storm(object):
                             lon=strike_data.geometry[event].x,
                             key=event)
         if create_html:
-            data_date = str(strike_data.datetime.iloc[0].date())
-            m.save('map_{0}.html'.format(strike_data.dt[0].split()[0]))
+            data_date = strike_data.dt[0].split()[0]
+            m.save('map_{0}.html'.format(data_date))
         return m
 
     @staticmethod
