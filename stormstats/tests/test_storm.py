@@ -18,13 +18,11 @@ def test_examine_date_structure():
 
 def test_create_map():
     """Check a map file gets created"""
-    f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    test_data = stormstats.misc.read_wwln(f)
-    dstr = str(test_data.datetime[0].date())
-    filename = 'map_{0}.html'.format(dstr)
+    S = stormstats.Storm()
+    filename = 'map_2016-11-03.html'
     if os.path.isfile(filename):
         os.remove(filename)
-    mx = stormstats.storm.get_map(strike_data=test_data)
+    mx = S.get_map()
     assert os.path.isfile(filename), "Error, no html mapfile found"
     os.remove(filename)
 
