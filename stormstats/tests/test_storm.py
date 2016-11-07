@@ -10,7 +10,7 @@ import stormstats
 def test_examine_date_structure():
     """Check datetime is right type and elements of the datetime are ints"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    test_data = stormstats.storm.read_wwln(f)
+    test_data = stormstats.misc.read_wwln(f)
     assert isinstance(test_data['datetime'][0], pd.tslib.Timestamp)
     assert isinstance(test_data['datetime'][0].date().year, int)
     assert isinstance(test_data['datetime'][0].time().microsecond, int)
@@ -18,13 +18,11 @@ def test_examine_date_structure():
 
 def test_create_map():
     """Check a map file gets created"""
-    f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    test_data = stormstats.storm.read_wwln(f)
-    dstr = str(test_data.datetime[0].date())
-    filename = 'map_{0}.html'.format(dstr)
+    S = stormstats.Storm()
+    filename = 'map_2016-11-03.html'
     if os.path.isfile(filename):
         os.remove(filename)
-    mx = stormstats.storm.get_map(strike_data=test_data)
+    mx = S.get_map()
     assert os.path.isfile(filename), "Error, no html mapfile found"
     os.remove(filename)
 
@@ -33,19 +31,19 @@ def test_read_blitzorg_csv():
     """Check a geopandas dataframe gets created and filled with data from the
     csv files downloaded via blitzorg.
     """
-    df = stormstats.storm.read_blitzorg_csv()
+    S = stormstats.storm.Storm()
     er1 = 'Geopandas object not created'
     er2 = 'Geometry elements are not Shapley point objects'
     er3 = "Error, test data not in geopandas df object"
-    assert type(df) == gpd.geodataframe.GeoDataFrame, er1
-    assert type(df['geometry'][0]) == Point, er2
-    assert len(df) == 100, er3
+    assert type(S.df) == gpd.geodataframe.GeoDataFrame, er1
+    assert type(S.df['geometry'][0]) == Point, er2
+    assert len(S.df) == 100, er3
 
 
 def test_bzorg_to_geopandas():
     """Check a geopandas dataframe gets created and filled with data"""
     f = pkg.resource_filename('stormstats', "egdata/testdata.loc")
-    df = stormstats.storm.wwln_to_geopandas(f)
+    df = stormstats.misc.wwln_to_geopandas(f)
     er1 = 'Geopandas object not created'
     er2 = 'Geometry elements are not Shapley point objects'
     er3 = "Error, test data not in geopandas df object"
